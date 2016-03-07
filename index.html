@@ -1,13 +1,81 @@
-<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-  </body>
+	<title>Battery App</title>
+	<body>
+		<!-- <div class="demo-wrapper">
+
+		<h1>Demo:  JavaScript Battery API</h1>
+
+		<div class="demo-conversion">Read <a href="https://davidwalsh.name/battery-api" target="_top">JavaScript Battery API</a></div>
+
+		<div id="promoNode"></div>
+			
+			<p>Check out the console to see changes in battery status.  You must have Aurora to view this page properly.</p>
+			
+			<h2>Your Battery</h2><br />
+			<div id="battery" style="border: 1px solid #000; width: 200px;">
+				
+				<div id="batteryLevel" style="min-height: 30px; font-size: 40px; text-align:center; color: #000; background: #ddd;"></div>
+				
+			</div><br />
+			
+			<p>
+				<strong>Charging Status:</strong> <span id="chargingStatus"></span>
+			</p>
+			
+		</div>
+
+		<p class="demo-conversion">Back to: <a href="https://davidwalsh.name/battery-api" target="_top">JavaScript Battery API</a></p> -->
+    <div id="output" class="output">
+      <div id="content">
+        <div><span id="warning"></span></div>
+        <div>Charging: <span id="chargingState">Charging</span></div>
+        <div>Time to charge: <span id="chargingTime">0 Seconds</span></div>
+        <div>Time to discharge: <span id="dischargeTime">Infinity Seconds</span></div>
+        <div>Battery Level: <span id="level">100%</span></div>
+        </div>
+      <div id="status"></div>
+      <pre id="log"></pre>
+    </div>    
+	</body>
 </html>
+<script>
+  var chargingStateEl = document.getElementById('chargingState');
+  var chargingTimeEl = document.getElementById('chargingTime');
+  var dichargeTimeEl = document.getElementById('dischargeTime');
+  var levelEl = document.getElementById('level');
+
+  function updateBatteryUI(battery) {
+    levelEl.textContent = (battery.level * 100) + '%';
+    chargingTimeEl.textContent = battery.chargingTime + ' Seconds';
+    dichargeTimeEl.textContent = battery.dischargingTime + ' Seconds';
+
+    if (battery.charging === true) {
+      chargingStateEl.textContent = 'Charging';
+    } else if (battery.charging === false) {
+      chargingStateEl.textContent = 'Discharging';
+    }
+  }
+
+  function monitorBattery(battery) {
+    // Update the initial UI.
+    updateBatteryUI(battery);
+
+    // Monitor for futher updates.
+    battery.addEventListener('levelchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('dischargingtimechange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingtimechange',
+      updateBatteryUI.bind(null, battery));
+  }
+
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(monitorBattery);
+  } else {
+    ChromeSamples.setStatus('The Battery Status API is not supported on ' +
+      'this platform.');
+  }
+	
+</script>
